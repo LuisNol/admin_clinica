@@ -14,11 +14,11 @@ export class LoginComponent implements OnInit {
   public passwordClass = false;
   public ERROR = false;
   form = new FormGroup({
-    email: new FormControl('josecode@gmail.com', [
+    email: new FormControl('', [
       Validators.required,
       Validators.email,
     ]),
-    password: new FormControl('12345678', [Validators.required]),
+    password: new FormControl('', [Validators.required]),
   });
 
   get f() {

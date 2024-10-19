@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../service/appointment.service';
 
 @Component({
@@ -6,65 +6,76 @@ import { AppointmentService } from '../service/appointment.service';
   templateUrl: './add-appointments.component.html',
   styleUrls: ['./add-appointments.component.scss']
 })
-export class AddAppointmentsComponent {
+export class AddAppointmentsComponent implements OnInit {
 
+  hours: any = [];
+  specialities: any = [];
+  date_appointment: any = new Date();  // Fecha de la cita
+  minDate: Date = new Date();  // Fecha mínima, que será la fecha actual
+  hour: any;
+  specialitie_id: any;
 
-  hours:any = [];
-  specialities:any = [];
-  date_appointment:any= new Date();
-  hour:any;
-  specialitie_id:any;
+  name: string = '';
+  surname: string = '';
+  mobile: string = '';
+  n_document: number = 0;
+  name_companion: string = '';
+  surname_companion: string = '';
 
-  name:string = '';
-  surname:string = '';
-  mobile:string = '';
-  n_document:number = 0;
-  name_companion:string = '';
-  surname_companion:string = '';
+  amount: number = 0;
+  amount_add: number = 0;
+  method_payment: string = '';
 
-  amount:number = 0;
-  amount_add:number = 0;
-  method_payment:string = '';
+  DOCTORS: any = [];
+  DOCTOR_SELECTED: any;
+  selected_segment_hour: any;
 
-  DOCTORS:any = [];
-  DOCTOR_SELECTED:any;
-  selected_segment_hour:any;
+  public text_success: string = '';
+  public text_validation: string = '';
 
-  public text_success:string = '';
-  public text_validation:string = '';
-  constructor(
-    public appointmentService: AppointmentService,
-  ) {
-    
-  }
+  constructor(public appointmentService: AppointmentService) { }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.appointmentService.listConfig().subscribe((resp:any) => {
+    this.appointmentService.listConfig().subscribe((resp: any) => {
       this.hours = resp.hours;
       this.specialities = resp.specialities;
-    })
+    });
   }
-  save(){
+
+  // Validar si la fecha seleccionada es anterior a la fecha actual
+  validateAppointmentDate(): boolean {
+    const today = new Date();
+    const appointmentDate = new Date(this.date_appointment);
+
+    // Comparar las fechas sin las horas
+    if (appointmentDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
+      this.text_validation = "La fecha de la cita no puede ser anterior a la fecha actual.";
+      return false;
+    }
+    return true;
+  }
+
+  save() {
     this.text_validation = "";
 
-    if(this.amount < this.amount_add){
+    // Validación de la fecha de la cita
+    if (!this.validateAppointmentDate()) {
+      return;  // Si la validación falla, no continuar con el registro
+    }
+
+    if (this.amount < this.amount_add) {
       this.text_validation = "EL MONTO INGRESADO COMO ADELANTO NO PUEDE SER MAYOR AL COSTO DE LA CITA MEDICA";
       return;
     }
 
-    if(!this.name || !this.surname || !this.mobile || !this.n_document || !this.name_companion || !this.surname_companion || !this.date_appointment
-      || !this.specialitie_id || !this.selected_segment_hour || !this.amount || !this.amount_add || !this.method_payment){
-      this.text_validation = "LOS CAMPOS SON NECESARIOS (SEGMENTO DE HORA, LA FECHA , LA ESPECIALIDAD, PACIENTE Y PAGOS)";
+    if (!this.name || !this.surname || !this.mobile || !this.n_document || !this.name_companion || !this.surname_companion || !this.date_appointment
+      || !this.specialitie_id || !this.selected_segment_hour || !this.amount || !this.amount_add || !this.method_payment) {
+      this.text_validation = "LOS CAMPOS SON NECESARIOS (SEGMENTO DE HORA, LA FECHA, LA ESPECIALIDAD, PACIENTE Y PAGOS)";
       return;
     }
 
-    
-
     let data = {
       "doctor_id": this.DOCTOR_SELECTED.doctor.id,
-      // "patient_id",
       name: this.name,
       surname: this.surname,
       mobile: this.mobile,
@@ -77,62 +88,58 @@ export class AddAppointmentsComponent {
       amount: this.amount,
       amount_add: this.amount_add,
       method_payment: this.method_payment,
-    }
+    };
 
-    this.appointmentService.registerAppointment(data).subscribe((resp:any) => {
+    this.appointmentService.registerAppointment(data).subscribe((resp: any) => {
       console.log(resp);
-
       this.text_success = "LA CITA MEDICA SE REGISTRO CON EXITO";
     });
   }
 
-  filtro(){
+  filtro() {
     let data = {
       date_appointment: this.date_appointment,
       hour: this.hour,
-      specialitie_id : this.specialitie_id,
-    }
-    this.appointmentService.listFilter(data).subscribe((resp:any) => {
+      specialitie_id: this.specialitie_id,
+    };
+    this.appointmentService.listFilter(data).subscribe((resp: any) => {
       console.log(resp);
       this.DOCTORS = resp.doctors;
-    })
+    });
   }
 
-  countDisponibilidad(DOCTOR:any){
+  countDisponibilidad(DOCTOR: any) {
     let SEGMENTS = [];
-    SEGMENTS = DOCTOR.segments.filter((item:any) => !item.is_appointment);
+    SEGMENTS = DOCTOR.segments.filter((item: any) => !item.is_appointment);
     return SEGMENTS.length;
   }
 
-  showSegment(DOCTOR:any){
+  showSegment(DOCTOR: any) {
     this.DOCTOR_SELECTED = DOCTOR;
   }
 
-  selectSegment(SEGMENT:any){
+  selectSegment(SEGMENT: any) {
     this.selected_segment_hour = SEGMENT;
   }
 
-  filterPatient(){
-    this.appointmentService.listPatient(this.n_document+"").subscribe((resp:any) => {
+  filterPatient() {
+    this.appointmentService.listPatient(this.n_document + "").subscribe((resp: any) => {
       console.log(resp);
-      if(resp.message == 403){
-        this.name = '';
-        this.surname = '';
-        this.mobile = ''
-        this.n_document = 0;
-      }else{
+      if (resp.message == 403) {
+        this.resetPatient();
+      } else {
         this.name = resp.name;
         this.surname = resp.surname;
         this.mobile = resp.mobile;
         this.n_document = resp.n_document;
       }
-    })
+    });
   }
 
-  resetPatient(){
+  resetPatient() {
     this.name = '';
     this.surname = '';
-    this.mobile = ''
+    this.mobile = '';
     this.n_document = 0;
   }
 }
