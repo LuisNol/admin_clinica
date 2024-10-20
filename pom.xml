@@ -32,8 +32,8 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Dependencias adicionales según el proyecto -->
-        <!-- Puedes añadir más dependencias aquí -->
+        <!-- Otras dependencias del proyecto -->
+        <!-- Puedes añadir más dependencias aquí según las necesidades de tu proyecto -->
     </dependencies>
 
     <!-- Configuraciones de compilación y plugins -->
@@ -69,7 +69,7 @@
                 <version>3.7.0.1746</version>
             </plugin>
 
-            <!-- Otros plugins como el de pruebas, etc., se pueden agregar aquí -->
+            <!-- Otros plugins según sea necesario -->
         </plugins>
     </build>
 
@@ -80,7 +80,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- Repositorios de plugins y dependencias (si se necesitan) -->
+    <!-- Repositorios de plugins y dependencias -->
     <repositories>
         <repository>
             <id>central</id>
@@ -88,3 +88,4 @@
         </repository>
     </repositories>
 </project>
+
