@@ -28,9 +28,9 @@ jobs:
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
-      # 4. Ejecutar pruebas de Angular
+      # 4. Ejecutar pruebas de Angular en modo headless
       - name: Run Angular tests
-        run: npm test -- --watch=false --no-progress
+        run: npm test -- --watch=false --no-progress --browsers=ChromeHeadless
 
       # 5. Instalar SonarScanner
       - name: Install SonarScanner
