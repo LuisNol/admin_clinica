@@ -24,10 +24,11 @@ jobs:
         with:
           node-version: '16'
 
-      # 3. Asegurar permisos para Node.js
+      # 3. Asegurar permisos para Node.js (Evitar errores de permisos)
       - name: Ensure Node.js permissions
         run: |
-          sudo chmod +x $(which node)
+          sudo chmod +x $(which node) || true
+          sudo ln -sf $(which node) /usr/local/bin/node || true
 
       # 4. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
@@ -86,4 +87,3 @@ jobs:
           else
             echo "Quality Gate passed: $status"
           fi
-
