@@ -18,13 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Configurar Node.js (requerido para Angular)
+      # 2. Configurar Node.js (requerido para Angular y SonarQube)
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - run: sudo chmod +x $(which node)
 
-      # 3. Instalar dependencias de npm para Angular con `--legacy-peer-deps`
+      # 3. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
@@ -34,17 +35,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 5. Instalar Chrome
+      # 5. Instalar Google Chrome
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # 6. Configuración de pruebas Angular ignorando elementos desconocidos
-      - name: Run Angular tests with forced schema
-        run: |
-          ng test --watch=false --no-progress --browsers=ChromeHeadless || echo "Forcing tests to pass"
+      # 6. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         env:
           CHROME_BIN: /usr/bin/google-chrome
-        continue-on-error: true # Esto permite que las pruebas continúen y el flujo no se detenga en errores de prueba.
 
       # 7. Instalar SonarScanner
       - name: Install SonarScanner
@@ -55,7 +54,7 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 8. Ejecutar el análisis de SonarQube y excluir archivos CSS
+      # 8. Ejecutar el análisis de SonarQube y excluir archivos CSS, especificando la ruta del ejecutable de Node.js
       - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -67,7 +66,8 @@ jobs:
             -Dsonar.sources=. \
             -Dsonar.exclusions=**/*.css \
             -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.nodejs.executable=$(which node)
 
       # 9. Verificar el estado de la Quality Gate
       - name: Quality Gate Status
