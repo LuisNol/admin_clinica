@@ -34,13 +34,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 5. Instalar Chrome
+      # 5. Instalar Google Chrome
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
       # 6. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
-        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
+        run: |
+          npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
