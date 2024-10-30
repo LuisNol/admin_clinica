@@ -42,7 +42,7 @@ jobs:
       # 6. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
         run: |
-          ng test --no-watch --no-progress --browsers=ChromeHeadless || true  # Agregar || true para evitar fallas en el pipeline por errores de test
+          ng test --no-watch --no-progress --browsers=ChromeHeadless || true
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
@@ -55,8 +55,8 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 8. Ejecutar el análisis de SonarQube y excluir archivos CSS, especificando la ruta del ejecutable de Node.js
-      - name: Run SonarQube Scan with CSS Exclusions
+      # 8. Ejecutar el análisis de SonarQube excluyendo archivos grandes y node_modules
+      - name: Run SonarQube Scan with CSS Exclusions and File Size Limit
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -65,7 +65,7 @@ jobs:
             -Dsonar.organization=my-org \
             -Dsonar.projectKey=my-angular-app \
             -Dsonar.sources=. \
-            -Dsonar.exclusions=**/*.css \
+            -Dsonar.exclusions=**/*.css,**/node_modules/**,**/*.zip,**/*.so \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.nodejs.executable=$(which node)
