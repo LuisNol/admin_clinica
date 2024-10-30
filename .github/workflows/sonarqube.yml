@@ -24,9 +24,11 @@ jobs:
         with:
           node-version: '16'
 
-      # 3. Asegurar permisos para Node.js
-      - name: Set Node.js executable permissions
-        run: sudo chmod +x $(which node)
+      # 3. Asignar permisos al ejecutable de Node.js
+      - name: Ensure Node.js permissions
+        run: |
+          sudo chmod +x $(which node)
+          sudo ln -s $(which node) /usr/local/bin/node
 
       # 4. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
@@ -44,8 +46,7 @@ jobs:
 
       # 7. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
-        run: |
-          ng test --no-watch --no-progress --browsers=ChromeHeadless || true
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
@@ -58,8 +59,8 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 9. Ejecutar el análisis de SonarQube excluyendo archivos grandes y node_modules, estableciendo la ruta de node
-      - name: Run SonarQube Scan with CSS Exclusions and File Size Limit
+      # 9. Ejecutar el análisis de SonarQube excluyendo archivos CSS y configurando la ruta de Node.js
+      - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -68,7 +69,7 @@ jobs:
             -Dsonar.organization=my-org \
             -Dsonar.projectKey=my-angular-app \
             -Dsonar.sources=. \
-            -Dsonar.exclusions=**/*.css,**/node_modules/**,**/*.zip,**/*.so \
+            -Dsonar.exclusions=**/*.css,**/node_modules/** \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.nodejs.executable=$(which node)
