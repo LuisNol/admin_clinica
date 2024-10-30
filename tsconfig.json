@@ -22,7 +22,8 @@
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "skipLibCheck": true  // Añadido para ignorar errores de tipo en bibliotecas externas
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
