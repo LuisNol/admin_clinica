@@ -32,24 +32,28 @@ jobs:
       - name: Install Chrome dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm-dev
+          sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 5. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
+      # 5. Instalar Chrome
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # 6. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
-        run: |
-          npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
-      # 6. Instalar SonarScanner
+      # 7. Instalar SonarScanner
       - name: Install SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.2966-linux.zip
           unzip sonar-scanner-cli-5.0.0.2966-linux.zip
           mv sonar-scanner-5.0.0.2966-linux sonar-scanner
+          sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 7. Ejecutar el análisis de SonarQube y excluir archivos CSS
+      # 8. Ejecutar el análisis de SonarQube y excluir archivos CSS
       - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -63,7 +67,7 @@ jobs:
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
 
-      # 8. Verificar el estado de la Quality Gate
+      # 9. Verificar el estado de la Quality Gate
       - name: Quality Gate Status
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -76,3 +80,4 @@ jobs:
           else
             echo "Quality Gate passed: $status"
           fi
+
