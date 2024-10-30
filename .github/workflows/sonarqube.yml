@@ -1,4 +1,4 @@
-nname: CI/CD workflow for Angular Build and Sonar Code Scan
+name: CI/CD workflow for Angular Build and Sonar Code Scan
 
 on:
   push:
