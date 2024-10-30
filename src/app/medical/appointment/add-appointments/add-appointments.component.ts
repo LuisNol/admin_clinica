@@ -28,7 +28,7 @@ export class AddAppointmentsComponent implements OnInit {
 
   DOCTORS: any = [];
   DOCTOR_SELECTED: any;
-  selected_segment_hour: any;
+  selected_segment_hour:any;
 
   public text_success: string = '';
   public text_validation: string = '';
