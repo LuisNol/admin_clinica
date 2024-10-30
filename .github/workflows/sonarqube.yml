@@ -24,13 +24,10 @@ jobs:
         with:
           node-version: '16'
 
-      # 3. Asignar permisos al ejecutable de Node.js y verificar enlace simbólico
+      # 3. Asegurar permisos para Node.js
       - name: Ensure Node.js permissions
         run: |
           sudo chmod +x $(which node)
-          if [ ! -f "/usr/local/bin/node" ]; then
-            sudo ln -s $(which node) /usr/local/bin/node
-          fi
 
       # 4. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
@@ -61,17 +58,17 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 9. Ejecutar el análisis de SonarQube excluyendo archivos CSS y configurando la ruta de Node.js
+      # 9. Ejecutar el análisis de SonarQube y excluir archivos CSS, especificando la ruta del ejecutable de Node.js
       - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          sonar-scanner \
+          ./sonar-scanner/bin/sonar-scanner \
             -Dsonar.organization=my-org \
             -Dsonar.projectKey=my-angular-app \
             -Dsonar.sources=. \
-            -Dsonar.exclusions=**/*.css,**/node_modules/** \
+            -Dsonar.exclusions=**/*.css \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.nodejs.executable=$(which node)
