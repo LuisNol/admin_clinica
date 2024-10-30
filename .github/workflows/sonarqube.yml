@@ -24,11 +24,13 @@ jobs:
         with:
           node-version: '16'
 
-      # 3. Asignar permisos al ejecutable de Node.js
+      # 3. Asignar permisos al ejecutable de Node.js y verificar enlace simbólico
       - name: Ensure Node.js permissions
         run: |
           sudo chmod +x $(which node)
-          sudo ln -s $(which node) /usr/local/bin/node
+          if [ ! -f "/usr/local/bin/node" ]; then
+            sudo ln -s $(which node) /usr/local/bin/node
+          fi
 
       # 4. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
@@ -87,3 +89,4 @@ jobs:
           else
             echo "Quality Gate passed: $status"
           fi
+
