@@ -1,4 +1,4 @@
-name: CI/CD workflow for Angular Build and Sonar Code Scan
+nname: CI/CD workflow for Angular Build and Sonar Code Scan
 
 on:
   push:
@@ -30,7 +30,8 @@ jobs:
 
       # 4. Ejecutar pruebas de Angular en modo headless
       - name: Run Angular tests
-        run: npm test -- --watch=false --no-progress --browsers=ChromeHeadless
+        run: |
+          npx karma start --single-run --browsers=ChromeHeadless
 
       # 5. Instalar SonarScanner
       - name: Install SonarScanner
