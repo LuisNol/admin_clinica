@@ -14,43 +14,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar el código fuente
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Configurar Node.js (requerido para Angular y SonarQube)
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
-      # 3. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
-      # 4. Instalar dependencias adicionales para Chrome Headless
       - name: Install Chrome dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 5. Instalar Google Chrome
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # 6. Asegurar permisos y enlace simbólico para Node.js
       - name: Ensure Node.js permissions
         run: |
           sudo ln -sf $(which node) /usr/local/bin/node
           sudo chmod +x /usr/local/bin/node
 
-      # 7. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
         run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
-      # 8. Instalar SonarScanner
       - name: Install SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.2966-linux.zip
@@ -59,7 +51,6 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 9. Ejecutar el análisis de SonarQube y excluir archivos CSS, especificando la ruta del ejecutable de Node.js
       - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -74,7 +65,6 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.nodejs.executable=$(which node)
 
-      # 10. Verificar el estado de la Quality Gate
       - name: Quality Gate Status
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
