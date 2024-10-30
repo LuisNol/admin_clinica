@@ -14,20 +14,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Descargar el código fuente
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # 2. Configurar Node.js (requerido para Angular)
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16'
 
+      # 3. Instalar dependencias de npm para Angular con `--legacy-peer-deps`
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
+      # 4. Ejecutar pruebas de Angular
       - name: Run Angular tests
         run: npm test -- --watch=false --no-progress
 
+      # 5. Instalar SonarScanner
       - name: Install SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.2966-linux.zip
@@ -35,6 +40,7 @@ jobs:
           mv sonar-scanner-5.0.0.2966-linux sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
+      # 6. Ejecutar el análisis de SonarQube y excluir archivos CSS
       - name: Run SonarQube Scan with CSS Exclusions
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -48,6 +54,7 @@ jobs:
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
 
+      # 7. Verificar el estado de la Quality Gate
       - name: Quality Gate Status
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
