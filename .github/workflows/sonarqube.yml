@@ -23,30 +23,33 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: sudo chmod +x $(which node)
 
-      # 3. Instalar dependencias de npm para Angular
+      # 3. Asegurar permisos para Node.js
+      - name: Set Node.js executable permissions
+        run: sudo chmod +x $(which node)
+
+      # 4. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
-      # 4. Instalar dependencias adicionales para Chrome Headless
+      # 5. Instalar dependencias adicionales para Chrome Headless
       - name: Install Chrome dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 5. Instalar Google Chrome
+      # 6. Instalar Google Chrome
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # 6. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
+      # 7. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
         run: |
           ng test --no-watch --no-progress --browsers=ChromeHeadless || true
         env:
           CHROME_BIN: /usr/bin/google-chrome
 
-      # 7. Instalar SonarScanner
+      # 8. Instalar SonarScanner
       - name: Install SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.2966-linux.zip
@@ -55,13 +58,13 @@ jobs:
           sudo chmod +x sonar-scanner/bin/sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-      # 8. Ejecutar el análisis de SonarQube excluyendo archivos grandes y node_modules
+      # 9. Ejecutar el análisis de SonarQube excluyendo archivos grandes y node_modules, estableciendo la ruta de node
       - name: Run SonarQube Scan with CSS Exclusions and File Size Limit
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          ./sonar-scanner/bin/sonar-scanner \
+          sonar-scanner \
             -Dsonar.organization=my-org \
             -Dsonar.projectKey=my-angular-app \
             -Dsonar.sources=. \
@@ -70,7 +73,7 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.nodejs.executable=$(which node)
 
-      # 9. Verificar el estado de la Quality Gate
+      # 10. Verificar el estado de la Quality Gate
       - name: Quality Gate Status
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
