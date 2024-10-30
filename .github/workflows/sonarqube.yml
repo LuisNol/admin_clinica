@@ -24,25 +24,25 @@ jobs:
         with:
           node-version: '16'
 
-      # 3. Asegurar permisos para Node.js (Evitar errores de permisos)
-      - name: Ensure Node.js permissions
-        run: |
-          sudo chmod +x $(which node) || true
-          sudo ln -sf $(which node) /usr/local/bin/node || true
-
-      # 4. Instalar dependencias de npm para Angular
+      # 3. Instalar dependencias de npm para Angular
       - name: Install npm dependencies
         run: npm install --legacy-peer-deps
 
-      # 5. Instalar dependencias adicionales para Chrome Headless
+      # 4. Instalar dependencias adicionales para Chrome Headless
       - name: Install Chrome dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
 
-      # 6. Instalar Google Chrome
+      # 5. Instalar Google Chrome
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
+
+      # 6. Asegurar permisos y enlace simbólico para Node.js
+      - name: Ensure Node.js permissions
+        run: |
+          sudo ln -sf $(which node) /usr/local/bin/node
+          sudo chmod +x /usr/local/bin/node
 
       # 7. Ejecutar pruebas de Angular en modo headless con Karma y Chrome
       - name: Run Angular tests
@@ -87,3 +87,4 @@ jobs:
           else
             echo "Quality Gate passed: $status"
           fi
+
