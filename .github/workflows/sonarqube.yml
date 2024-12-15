@@ -1,0 +1,80 @@
+name: CI/CD workflow for Angular Build and Sonar Code Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install npm dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Chrome dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev libxshmfence1 libasound2
+
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Ensure Node.js permissions
+        run: |
+          sudo ln -sf $(which node) /usr/local/bin/node
+          sudo chmod +x /usr/local/bin/node
+
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadless
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+
+      - name: Install SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.0.2966-linux.zip
+          unzip sonar-scanner-cli-5.0.0.2966-linux.zip
+          mv sonar-scanner-5.0.0.2966-linux sonar-scanner
+          sudo chmod +x sonar-scanner/bin/sonar-scanner
+          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
+
+      - name: Run SonarQube Scan with CSS Exclusions
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          ./sonar-scanner/bin/sonar-scanner \
+            -Dsonar.organization=my-org \
+            -Dsonar.projectKey=my-angular-app \
+            -Dsonar.sources=. \
+            -Dsonar.exclusions=**/*.css \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.nodejs.executable=$(which node)
+
+      - name: Quality Gate Status
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          status=$(curl -s -u $SONAR_TOKEN: $SONAR_HOST_URL/api/qualitygates/project_status?projectKey=my-angular-app | jq -r '.projectStatus.status')
+          if [ "$status" != "OK" ]; then
+            echo "Quality Gate failed: $status"
+            exit 1
+          else
+            echo "Quality Gate passed: $status"
+          fi
+
