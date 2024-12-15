@@ -59,6 +59,7 @@
                                         <th mat-sort-header="email">Email</th>
                                         <th mat-sort-header="mobile">Telefono</th>
                                         <th mat-sort-header="birth_date">Fecha de cumpleaños</th>
+                                        <th mat-sort-header="document_type">Tipo Documento</th> <!-- Nueva columna -->
                                         <th mat-sort-header="n_document">N° Documento</th>
                                         <th mat-sort-header="created_at">Fecha de registro</th>
                                         <th ></th>
@@ -71,6 +72,7 @@
                                         <td>{{data.email}}</td>
                                         <td>{{data.mobile}}</td>
                                         <td>{{ data.birth_date }}</td>
+                                        <td>{{data.document_type_name}}</td> <!-- Mostrar el tipo de documento -->
                                         <td>{{data.n_document }}</td>
                                         <td>{{data.created_at }}</td>
                                         <td class="text-end">

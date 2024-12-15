@@ -80,7 +80,16 @@
                                         <input class="form-control" [(ngModel)]="education" name="education"  type="text"  >
                                     </div>
                                 </div>
-
+                                <div class="col-12 col-md-6 col-xl-4">
+                                    <div class="form-group local-forms">
+                                        <label>Tipo de Documento <span class="login-danger">*</span></label>
+                                        <select class="form-control" [(ngModel)]="document_type_id" name="document_type_id">
+                                            <option value="" disabled selected>Selecciona el tipo de documento</option>
+                                            <option *ngFor="let type of documentTypes" [value]="type.id">{{ type.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
                                 <div class="col-12 col-md-6 col-xl-4">
                                     <div class="form-group local-forms">
                                         <label >N° Documento <span class="login-danger">*</span></label>

@@ -49,4 +49,12 @@ export class PatientMService {
     return this.http.get(URL,{headers: headers});
   }
 
+   // Función para obtener los tipos de documento
+   getDocumentTypes() {
+    let headers = new HttpHeaders({'Authorization': 'Bearer ' + this.authService.token});
+    let URL = URL_SERVICIOS + "/document-types";  // Suponiendo que la URL para obtener los tipos de documentos es "/document-types"
+    return this.http.get(URL, { headers: headers });
+}
+
+
 }
