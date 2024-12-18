@@ -11,7 +11,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AtencionMedicalComponent } from './atencion-medical/atencion-medical.component';
-
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -19,17 +25,24 @@ import { AtencionMedicalComponent } from './atencion-medical/atencion-medical.co
     AddAppointmentsComponent,
     EditAppointmentsComponent,
     ListAppointmentsComponent,
-    AtencionMedicalComponent
+    AtencionMedicalComponent,
   ],
   imports: [
     CommonModule,
     AppointmentRoutingModule,
     SharedModule,
-    // 
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterModule
+    RouterModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatSelectModule,
+    MatIconModule,
+  ],
+  providers:[
+    MatDatepickerModule
   ]
 })
-export class AppointmentModule { }
+export class AppointmentModule {}

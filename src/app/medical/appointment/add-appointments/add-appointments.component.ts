@@ -4,14 +4,13 @@ import { AppointmentService } from '../service/appointment.service';
 @Component({
   selector: 'app-add-appointments',
   templateUrl: './add-appointments.component.html',
-  styleUrls: ['./add-appointments.component.scss']
+  styleUrls: ['./add-appointments.component.scss'],
 })
 export class AddAppointmentsComponent implements OnInit {
-
   hours: any = [];
   specialities: any = [];
-  date_appointment: any = new Date();  // Fecha de la cita
-  minDate: Date = new Date();  // Fecha mínima, que será la fecha actual
+  date_appointment: any = new Date(); // Fecha de la cita
+  minDate: Date = new Date(); // Fecha mínima, que será la fecha actual
   hour: any;
   specialitie_id: any;
 
@@ -28,12 +27,13 @@ export class AddAppointmentsComponent implements OnInit {
 
   DOCTORS: any = [];
   DOCTOR_SELECTED: any;
-  selected_segment_hour:any;
+  selected_segment_hour: any;
 
   public text_success: string = '';
   public text_validation: string = '';
+  currentStep: number = 1; // Control del paso actual
 
-  constructor(public appointmentService: AppointmentService) { }
+  constructor(public appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.appointmentService.listConfig().subscribe((resp: any) => {
@@ -49,53 +49,111 @@ export class AddAppointmentsComponent implements OnInit {
 
     // Comparar las fechas sin las horas
     if (appointmentDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
-      this.text_validation = "La fecha de la cita no puede ser anterior a la fecha actual.";
+      this.text_validation =
+        'La fecha de la cita no puede ser anterior a la fecha actual.';
       return false;
     }
     return true;
   }
+  nextStep(): void {
+    if (this.currentStep < 3) this.currentStep++;
+  }
 
+  previousStep(): void {
+    if (this.currentStep > 1) this.currentStep--;
+  }
+  validateStep(step: number): boolean {
+    // Validación específica de cada paso
+    if (
+      step === 1 &&
+      (!this.date_appointment || !this.hour || !this.specialitie_id)
+    ) {
+      this.text_validation = 'Por favor completa todos los campos del Paso 1.';
+      return false;
+    }
+    if (step === 2 && (!this.DOCTOR_SELECTED || !this.selected_segment_hour)) {
+      this.text_validation = 'Por favor selecciona un médico y un horario.';
+      return false;
+    }
+    return true;
+  }
   save() {
-    this.text_validation = "";
+    debugger;
+    this.text_validation = '';
 
     // Validación de la fecha de la cita
     if (!this.validateAppointmentDate()) {
-      return;  // Si la validación falla, no continuar con el registro
+      return; // Si la validación falla, no continuar con el registro
     }
 
     if (this.amount < this.amount_add) {
-      this.text_validation = "EL MONTO INGRESADO COMO ADELANTO NO PUEDE SER MAYOR AL COSTO DE LA CITA MEDICA";
+      this.text_validation =
+        'EL MONTO INGRESADO COMO ADELANTO NO PUEDE SER MAYOR AL COSTO DE LA CITA MEDICA';
       return;
     }
 
-    if (!this.name || !this.surname || !this.mobile || !this.n_document || !this.name_companion || !this.surname_companion || !this.date_appointment
-      || !this.specialitie_id || !this.selected_segment_hour || !this.amount || !this.amount_add || !this.method_payment) {
-      this.text_validation = "LOS CAMPOS SON NECESARIOS (SEGMENTO DE HORA, LA FECHA, LA ESPECIALIDAD, PACIENTE Y PAGOS)";
+    if (
+      !this.name ||
+      !this.surname ||
+      !this.mobile ||
+      !this.n_document ||
+      !this.name_companion ||
+      !this.surname_companion ||
+      !this.date_appointment ||
+      !this.specialitie_id ||
+      !this.selected_segment_hour ||
+      !this.amount ||
+      !this.amount_add ||
+      !this.method_payment
+    ) {
+      this.text_validation =
+        'LOS CAMPOS SON NECESARIOS (SEGMENTO DE HORA, LA FECHA, LA ESPECIALIDAD, PACIENTE Y PAGOS)';
       return;
     }
 
     let data = {
-      "doctor_id": this.DOCTOR_SELECTED.doctor.id,
+      doctor_id: this.DOCTOR_SELECTED.doctor.id,
       name: this.name,
       surname: this.surname,
       mobile: this.mobile,
       n_document: this.n_document,
       name_companion: this.name_companion,
       surname_companion: this.surname_companion,
-      "date_appointment": this.date_appointment,
-      "specialitie_id": this.specialitie_id,
-      "doctor_schedule_join_hour_id": this.selected_segment_hour.id,
+      date_appointment: this.date_appointment,
+      specialitie_id: this.specialitie_id,
+      doctor_schedule_join_hour_id: this.selected_segment_hour.id,
       amount: this.amount,
       amount_add: this.amount_add,
       method_payment: this.method_payment,
     };
 
     this.appointmentService.registerAppointment(data).subscribe((resp: any) => {
-      console.log(resp);
-      this.text_success = "LA CITA MEDICA SE REGISTRO CON EXITO";
+      this.text_success = 'La cita médica se registró con éxito.';
+
+      // Reiniciar formulario
+      this.resetForm();
+
+      // Volver al primer paso
+      this.currentStep = 1;
     });
   }
-
+  // Método para reiniciar el formulario
+  resetForm(): void {
+    this.date_appointment = new Date();
+    this.hour = null;
+    this.specialitie_id = null;
+    this.name = '';
+    this.surname = '';
+    this.mobile = '';
+    this.n_document = 0;
+    this.name_companion = '';
+    this.surname_companion = '';
+    this.amount = 0;
+    this.method_payment = '';
+    this.DOCTOR_SELECTED = null;
+    this.selected_segment_hour = null;
+    this.DOCTORS = [];
+  }
   filtro() {
     let data = {
       date_appointment: this.date_appointment,
@@ -123,17 +181,19 @@ export class AddAppointmentsComponent implements OnInit {
   }
 
   filterPatient() {
-    this.appointmentService.listPatient(this.n_document + "").subscribe((resp: any) => {
-      console.log(resp);
-      if (resp.message == 403) {
-        this.resetPatient();
-      } else {
-        this.name = resp.name;
-        this.surname = resp.surname;
-        this.mobile = resp.mobile;
-        this.n_document = resp.n_document;
-      }
-    });
+    this.appointmentService
+      .listPatient(this.n_document + '')
+      .subscribe((resp: any) => {
+        console.log(resp);
+        if (resp.message == 403) {
+          this.resetPatient();
+        } else {
+          this.name = resp.name;
+          this.surname = resp.surname;
+          this.mobile = resp.mobile;
+          this.n_document = resp.n_document;
+        }
+      });
   }
 
   resetPatient() {
