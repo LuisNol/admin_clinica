@@ -93,7 +93,7 @@ export type ChartOptionsTwo = {
 })
 export class AdminDashboardComponent {
   public routes = routes;
-  public selectedValue : string = "2023";
+  public selectedValue : string = "2024";
   @ViewChild('chart') chart!: ChartComponent;
   public chartOptionsOne: Partial<ChartOptions>;
   public chartOptionsOneTwo: Partial<ChartOptionsTwo>;

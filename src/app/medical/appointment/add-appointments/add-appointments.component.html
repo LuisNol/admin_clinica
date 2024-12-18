@@ -28,7 +28,7 @@
                               <div class="form-group">
                                 <label>Fecha de la cita <span class="text-danger">*</span></label>
                                 <mat-form-field appearance="fill">
-                                  <input matInput [matDatepicker]="picker" [(ngModel)]="date_appointment" name="date_appointment" required />
+                                  <input matInput [matDatepicker]="picker" [min]="minDate" [(ngModel)]="date_appointment" name="date_appointment" required />
                                   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                   <mat-datepicker #picker></mat-datepicker>
                                 </mat-form-field>
