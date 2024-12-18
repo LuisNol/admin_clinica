@@ -73,6 +73,7 @@ export class DoctorDashboardComponent {
 
   
   selecedList: data[] = [
+    {value: '2024'},
     {value: '2023'},
     {value: '2022'},
     {value: '2021'},

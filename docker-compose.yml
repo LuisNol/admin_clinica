@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  angular-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200" # Mapea el puerto 4200 del contenedor al 4200 de la máquina host
+    volumes:
+      - .:/usr/src/app # Sincroniza el código fuente local con el contenedor
+      - /usr/src/app/node_modules # Evita conflictos entre las dependencias
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Soluciona problemas de live-reload en Docker
+      - NODE_ENV=development
+      - NGCC_PROCESS_COUNT=1
+
