@@ -21,7 +21,7 @@ $color_20: #888;
 $color_21: rgba(51, 53, 72, 0.75);
 $color_22: #ff0000;
 $color_23: rgba(51, 52, 72, 0.5);
-$color_24: #00d3c7;
+$color_24: #0F5132;
 $color_25: #a0a0a0;
 $color_26: #18aefa;
 $color_27: rgba(51, 52, 72, 0.2);
@@ -67,7 +67,7 @@ $color_66: #26af48;
 $color_67: #ff9b01;
 $color_68: #008cff;
 $color_69: #8f13fd;
-$color_70: #ff01a2;
+$color_70: #842029;
 $color_71: #818181;
 $color_72: #3d5ee1;
 $color_73: #8c8c8c;
@@ -138,7 +138,7 @@ $background-color_37: #474d52;
 $background-color_38: #fef5e4;
 $background-color_39: #e5f3fe;
 $background-color_40: #f3e7fd;
-$background-color_41: #ffe5f6;
+$background-color_41: #F8D7DA;
 $background-color_42: #b2b2b2;
 $background-color_43: #ffffcc;
 $background-color_44: #f4f4f4;
@@ -8041,11 +8041,11 @@ a.status-red {
   color: $color_33;
 }
 .status-green {
-  background: rgba(0, 211, 199, 0.1);
-  color: $color_24;
+  background: #D1E7DD; // Verde claro
+  color: $color_24;      // Verde oscuro
 }
 a.status-green {
-  background: rgba(0, 211, 199, 0.1);
+  background: #D1E7DD;
   color: $color_24;
 }
 .status-orange {
@@ -8073,12 +8073,12 @@ a.status-purple {
   color: $color_69;
 }
 .status-pink {
-  background-color: $background-color_41;
-  color: $color_70;
+  background: $background-color_41; // Rojo claro
+  color: $color_70;      // Rojo oscuro
 }
 a.status-pink {
-  background-color: $background-color_41;
-  color: $color_70;
+  background: $background-color_41; // Rojo claro
+  color: $color_70;      // Rojo oscuro
 }
 .status-grey {
   background-color: $background-color_30;

@@ -449,6 +449,7 @@ export class AdminDashboardComponent {
   }
 
   selecedList: data[] = [
+    {value: '2025'},
     {value: '2024'},
     {value: '2023'},
     {value: '2022'},
