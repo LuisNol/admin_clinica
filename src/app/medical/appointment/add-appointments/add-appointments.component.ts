@@ -78,7 +78,6 @@ export class AddAppointmentsComponent implements OnInit {
     return true;
   }
   save() {
-    debugger;
     this.text_validation = '';
 
     // Validación de la fecha de la cita
@@ -97,8 +96,6 @@ export class AddAppointmentsComponent implements OnInit {
       !this.surname ||
       !this.mobile ||
       !this.n_document ||
-      !this.name_companion ||
-      !this.surname_companion ||
       !this.date_appointment ||
       !this.specialitie_id ||
       !this.selected_segment_hour ||
